@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solitaire Chess — Game Log</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Georgia', serif; background: #f7f4ef; color: #1a1a1a; min-height: 100vh; }
+
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.login-card { background: #fffdf9; border: 1px solid #c8b89a; border-radius: 4px; padding: 2.5rem 2rem; width: 100%; max-width: 360px; }
+.login-title { font-size: 20px; font-weight: normal; margin-bottom: 4px; }
+.login-sub { font-size: 11px; color: #8a7968; font-family: 'Courier New', monospace; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 1.75rem; }
+.login-card p { font-size: 13px; color: #6b5d4f; line-height: 1.7; }
+
+.app { max-width: 980px; margin: 0 auto; padding: 2rem 1.5rem; }
+.header { margin-bottom: 2rem; border-bottom: 1.5px solid #c8b89a; padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; }
+.header-left h1 { font-size: 22px; font-weight: normal; }
+.header-left h1 span { font-style: italic; color: #6b5d4f; }
+.header-sub { font-size: 11px; color: #8a7968; margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase; font-family: 'Courier New', monospace; }
+.header-right { display: flex; align-items: center; gap: 14px; }
+.user-badge { font-size: 12px; color: #6b5d4f; font-family: 'Courier New', monospace; }
+.user-badge strong { color: #3d2f20; }
+
+.tabs { display: flex; border-bottom: 0.5px solid #c8b89a; margin-bottom: 1.75rem; flex-wrap: wrap; }
+.tab { padding: 9px 20px; font-size: 13px; cursor: pointer; border: none; background: none; color: #8a7968; border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: 'Courier New', monospace; letter-spacing: 0.04em; }
+.tab:hover { color: #3d2f20; }
+.tab.active { color: #3d2f20; border-bottom-color: #3d2f20; font-weight: bold; }
+.section { display: none; }
+.section.active { display: block; }
+
+.fg { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.fg label { font-size: 11px; color: #8a7968; font-family: 'Courier New', monospace; letter-spacing: 0.05em; text-transform: uppercase; }
+input[type=email], input[type=password], input[type=text], select, textarea {
+  padding: 8px 10px; font-size: 13px; border: 1px solid #c8b89a; border-radius: 3px;
+  background: #fffdf9; color: #1a1a1a; font-family: 'Georgia', serif; width: 100%;
+}
+input:focus, select:focus, textarea:focus { outline: 2px solid #8a6b45; outline-offset: 1px; }
+textarea { resize: vertical; min-height: 72px; }
+select:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.btn-primary { padding: 9px 24px; font-size: 13px; border: 1.5px solid #3d2f20; border-radius: 3px; cursor: pointer; background: #3d2f20; color: #f7f4ef; font-family: 'Courier New', monospace; letter-spacing: 0.04em; }
+.btn-primary:hover { background: #5a4535; border-color: #5a4535; }
+.btn-secondary { padding: 7px 16px; font-size: 12px; border: 1px solid #c8b89a; border-radius: 3px; cursor: pointer; background: none; color: #6b5d4f; font-family: 'Courier New', monospace; }
+.btn-secondary:hover { background: #f0e8d8; }
+.btn-link { font-size: 11px; color: #a0917f; background: none; border: none; cursor: pointer; font-family: 'Courier New', monospace; text-decoration: underline; }
+.btn-link:hover { color: #3d2f20; }
+
+.msg-ok { font-size: 12px; color: #2d6a30; font-family: 'Courier New', monospace; }
+.msg-err { font-size: 12px; color: #a0391d; font-family: 'Courier New', monospace; }
+.loading-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #8a7968; font-family: 'Courier New', monospace; letter-spacing: 0.05em; }
+
+.matrix-layout { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+.matrix-wrap { overflow-x: auto; }
+table.mx { border-collapse: collapse; }
+.mx th { font-size: 11px; font-weight: bold; color: #6b5d4f; padding: 6px 8px; text-align: center; font-family: 'Courier New', monospace; letter-spacing: 0.03em; }
+.mx th.rl { text-align: right; padding-right: 12px; white-space: nowrap; }
+.mx td.diag { background: #e8e1d5; width: 100px; height: 70px; border: 1px solid #d6c9b4; }
+.mx td.cell { width: 100px; height: 70px; cursor: pointer; text-align: center; vertical-align: middle; background: #fffdf9; border: 1px solid #d6c9b4; transition: background 0.12s; }
+.mx td.cell:hover { background: #f0e8d8; }
+.mx td.cell.active { background: #e6ddc8; border-color: #8a6b45; }
+.cell-num { font-size: 20px; color: #1a1a1a; display: block; font-family: 'Courier New', monospace; }
+.cell-num.zero { color: #c5b8a5; font-size: 15px; }
+.cell-info { font-size: 10px; color: #8a7968; display: block; margin-top: 2px; font-family: 'Courier New', monospace; }
+.matrix-note { font-size: 11px; color: #a0917f; margin-top: 10px; font-family: 'Courier New', monospace; }
+
+.detail { flex: 1; min-width: 270px; background: #fffdf9; border: 1px solid #c8b89a; border-radius: 4px; padding: 1.25rem; }
+.detail-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 0.5px solid #d6c9b4; }
+.detail-title { font-size: 13px; color: #3d2f20; font-family: 'Courier New', monospace; }
+.close-btn { font-size: 14px; background: none; border: none; cursor: pointer; color: #a0917f; padding: 0 4px; }
+.close-btn:hover { color: #3d2f20; }
+
+.game-card { border: 0.5px solid #d6c9b4; border-radius: 3px; padding: 0.75rem; margin-bottom: 8px; background: #fffdf9; }
+.game-card.is-studied { opacity: 0.48; }
+.gc-players { font-size: 13px; color: #1a1a1a; font-style: italic; }
+.gc-players strong { font-style: normal; font-weight: bold; color: #3d2f20; font-size: 14px; }
+.gc-event { font-size: 11px; color: #8a7968; margin-top: 3px; font-family: 'Courier New', monospace; }
+.gc-note { font-size: 12px; color: #6b5d4f; margin-top: 7px; font-style: italic; padding-left: 8px; border-left: 2px solid #c8b89a; line-height: 1.5; }
+.gc-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; flex-wrap: wrap; gap: 4px; }
+.studied-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #8a7968; cursor: pointer; font-family: 'Courier New', monospace; }
+.studied-row input[type=checkbox] { cursor: pointer; width: 13px; height: 13px; }
+.gc-actions { display: flex; align-items: center; gap: 8px; }
+.gc-date { font-size: 10px; color: #b0a08e; font-family: 'Courier New', monospace; }
+.act-btn { font-size: 11px; color: #b0a08e; background: none; border: none; cursor: pointer; font-family: 'Courier New', monospace; }
+.act-btn:hover { color: #3d2f20; }
+.act-btn.danger:hover { color: #a0391d; }
+.add-pair-btn { width: 100%; padding: 8px; font-size: 12px; border: 1px dashed #c8b89a; border-radius: 3px; background: none; cursor: pointer; color: #8a7968; margin-top: 6px; font-family: 'Courier New', monospace; }
+.add-pair-btn:hover { background: #f0e8d8; }
+.empty-state { font-size: 13px; color: #b0a08e; padding: 1.5rem 0; text-align: center; font-style: italic; }
+
+.player-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.chip { padding: 5px 15px; font-size: 12px; border: 1px solid #c8b89a; border-radius: 2px; background: #fffdf9; cursor: pointer; color: #6b5d4f; font-family: 'Courier New', monospace; }
+.chip:hover { background: #f0e8d8; }
+.chip.active { background: #3d2f20; color: #f7f4ef; border-color: #3d2f20; }
+.inbox-from-label { font-size: 11px; color: #8a7968; font-family: 'Courier New', monospace; letter-spacing: 0.06em; text-transform: uppercase; margin: 18px 0 8px; }
+
+.form-section { max-width: 560px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row.one { grid-template-columns: 1fr; }
+.form-row + .form-row { margin-top: 14px; }
+
+.players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-bottom: 1.75rem; }
+.player-card { background: #fffdf9; border: 0.5px solid #c8b89a; border-radius: 4px; padding: 1rem; }
+.pc-name { font-size: 14px; font-weight: bold; color: #3d2f20; margin-bottom: 3px; }
+.pc-email { font-size: 11px; color: #8a7968; font-family: 'Courier New', monospace; word-break: break-all; }
+.pc-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 2px; font-family: 'Courier New', monospace; margin-top: 6px; background: #e8e1d5; color: #6b5d4f; }
+.pc-badge.admin { background: #3d2f20; color: #f7f4ef; }
+.section-label { font-size: 11px; color: #8a7968; font-family: 'Courier New', monospace; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+.add-player-box { background: #fffdf9; border: 0.5px solid #c8b89a; border-radius: 4px; padding: 1.25rem; max-width: 400px; }
+.add-player-box h3 { font-size: 13px; font-weight: normal; color: #3d2f20; margin-bottom: 1rem; font-family: 'Courier New', monospace; border-bottom: 0.5px solid #d6c9b4; padding-bottom: 8px; }
+.edit-form .form-row + .form-row { margin-top: 8px; }
+.edit-form .fg { margin-bottom: 0; }
+.edit-actions { display: flex; gap: 8px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div id="view-loading" class="loading-screen">Loading&hellip;</div>
+
+<div id="view-login" style="display:none">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-title">Solitaire Chess</div>
+      <div class="login-sub">Game Log &middot; Members only</div>
+      <div class="fg"><label>Email</label><input type="email" id="l-email" placeholder="your@email.com"></div>
+      <div class="fg"><label>Password</label><input type="password" id="l-pwd" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></div>
+      <button class="btn-primary" style="width:100%" onclick="doLogin()">Sign in</button>
+      <div id="login-msg" style="margin-top:10px"></div>
+    </div>
+  </div>
+</div>
+
+<div id="view-setup" style="display:none">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-title">First-time setup</div>
+      <div class="login-sub">Create admin profile</div>
+      <p style="margin-bottom:1.25rem">No players exist yet. Enter your name to initialize the database and become administrator.</p>
+      <div class="fg"><label>Your name</label><input type="text" id="setup-name" placeholder="e.g. Francesco"></div>
+      <button class="btn-primary" style="width:100%" onclick="doSetup()">Initialize</button>
+      <div id="setup-msg" style="margin-top:10px"></div>
+    </div>
+  </div>
+</div>
+
+<div id="view-notfound" style="display:none">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-title">Access pending</div>
+      <div class="login-sub">Not yet in the player list</div>
+      <p>Your account (<strong id="nf-email"></strong>) is authenticated but has not been added to the game log yet. Ask Francesco to add you from the Players tab.</p>
+      <br>
+      <button class="btn-secondary" onclick="doSignOut()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<div id="view-app" style="display:none">
+  <div class="app">
+    <div class="header">
+      <div class="header-left">
+        <h1>Solitaire Chess &mdash; <span>Game Log</span></h1>
+        <div class="header-sub" id="header-players">&hellip;</div>
+      </div>
+      <div class="header-right">
+        <span class="user-badge">Signed in as <strong id="badge-name"></strong></span>
+        <button class="btn-link" onclick="doSignOut()">Sign out</button>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs-bar">
+      <button class="tab active" id="t-matrix" onclick="switchTab('matrix')">Matrix</button>
+      <button class="tab" id="t-inbox" onclick="switchTab('inbox')">Inbox</button>
+      <button class="tab" id="t-add" onclick="switchTab('add')">+ Add game</button>
+    </div>
+
+    <div id="tab-matrix" class="section active">
+      <div class="matrix-layout">
+        <div class="matrix-wrap">
+          <table class="mx" id="the-matrix"></table>
+          <div class="matrix-note">row&nbsp;=&nbsp;submitter &nbsp;&middot;&nbsp; column&nbsp;=&nbsp;recipient</div>
+        </div>
+        <div class="detail" id="detail-panel" style="display:none">
+          <div class="detail-head">
+            <span class="detail-title" id="detail-title"></span>
+            <button class="close-btn" onclick="closeDetail()">&#x2715;</button>
+          </div>
+          <div id="detail-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-inbox" class="section">
+      <div class="player-chips" id="inbox-chips"></div>
+      <div id="inbox-body"></div>
+    </div>
+
+    <div id="tab-add" class="section">
+      <div class="form-section">
+        <div class="form-row">
+          <div class="fg" style="margin-bottom:0"><label>From (submitter)</label><select id="f-from" onchange="syncToOptions()"></select></div>
+          <div class="fg" style="margin-bottom:0"><label>To (recipient)</label><select id="f-to"></select></div>
+        </div>
+        <div class="form-row">
+          <div class="fg" style="margin-bottom:0"><label>White</label><input type="text" id="f-white" placeholder="e.g. Kasparov"></div>
+          <div class="fg" style="margin-bottom:0"><label>Black</label><input type="text" id="f-black" placeholder="e.g. Karpov"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg" style="margin-bottom:0"><label>Event</label><input type="text" id="f-event" placeholder="e.g. World Championship match"></div>
+          <div class="fg" style="margin-bottom:0"><label>Year</label><input type="text" id="f-year" placeholder="e.g. 1985" maxlength="4"></div>
+        </div>
+        <div class="form-row one">
+          <div class="fg" style="margin-bottom:0"><label>Submitter&rsquo;s note</label><textarea id="f-note" placeholder="Why is this game instructive? What should the recipient focus on?"></textarea></div>
+        </div>
+        <div style="margin-top:16px;display:flex;align-items:center;gap:14px">
+          <button class="btn-primary" onclick="submitGame()">Save game</button>
+          <div id="add-msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-players" class="section">
+      <div class="section-label">Current players</div>
+      <div class="players-grid" id="players-grid"></div>
+      <div class="add-player-box">
+        <h3>Add a player</h3>
+        <div class="fg"><label>Name</label><input type="text" id="np-name" placeholder="e.g. Damiano"></div>
+        <div class="fg"><label>Email (must match their Firebase account)</label><input type="email" id="np-email" placeholder="damiano@email.com"></div>
+        <button class="btn-primary" onclick="addPlayer()">Add player</button>
+        <div id="players-msg" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, setDoc }
+  from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCJBdwx0Zjr_jvwFYl6C7YIvVRjjRleLrk",
+  authDomain: "solitaire-chess.firebaseapp.com",
+  projectId: "solitaire-chess",
+  storageBucket: "solitaire-chess.firebasestorage.app",
+  messagingSenderId: "720979892034",
+  appId: "1:720979892034:web:b1e1e65c4246d9af49dadb"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+let currentUser = null, currentPlayer = null;
+let players = [], games = [];
+let activeCell = null, inboxPlayerId = null;
+let unsubPlayers = null, unsubGames = null;
+
+function showView(name) {
+  ['loading','login','setup','notfound','app'].forEach(v => {
+    document.getElementById(`view-${v}`).style.display = v === name ? '' : 'none';
+  });
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function playerById(id) { return players.find(p => p.id === id); }
+function playerName(id) { const p = playerById(id); return p ? p.name : 'Unknown'; }
+function gamesFor(a, b) { return games.filter(g => g.from === a && g.to === b); }
+function canModify(g) { return currentPlayer && (currentPlayer.isAdmin || g.submitterEmail === currentUser.email); }
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { currentUser = null; currentPlayer = null; showView('login'); return; }
+  currentUser = user;
+  showView('loading');
+  const snap = await getDocs(collection(db, 'players'));
+  if (snap.empty) { showView('setup'); return; }
+  let found = null;
+  snap.forEach(d => { if (d.data().email === user.email) found = { id: d.id, ...d.data() }; });
+  if (!found) { document.getElementById('nf-email').textContent = user.email; showView('notfound'); return; }
+  currentPlayer = found;
+  startApp();
+});
+
+window.doLogin = async function() {
+  const email = document.getElementById('l-email').value.trim();
+  const pwd = document.getElementById('l-pwd').value;
+  try {
+    await signInWithEmailAndPassword(auth, email, pwd);
+  } catch(e) {
+    document.getElementById('login-msg').innerHTML = '<div class="msg-err">Incorrect email or password.</div>';
+  }
+};
+
+window.doSignOut = async function() {
+  if (unsubPlayers) { unsubPlayers(); unsubPlayers = null; }
+  if (unsubGames) { unsubGames(); unsubGames = null; }
+  await signOut(auth);
+};
+
+window.doSetup = async function() {
+  const name = document.getElementById('setup-name').value.trim();
+  const msg = document.getElementById('setup-msg');
+  if (!name) { msg.innerHTML = '<div class="msg-err">Enter your name.</div>'; return; }
+  try {
+    await setDoc(doc(db, 'players', currentUser.uid), {
+      name, email: currentUser.email, isAdmin: true, createdAt: new Date().toISOString()
+    });
+    currentPlayer = { id: currentUser.uid, name, email: currentUser.email, isAdmin: true };
+    startApp();
+  } catch(e) { msg.innerHTML = `<div class="msg-err">${esc(e.message)}</div>`; }
+};
+
+function startApp() {
+  showView('app');
+  document.getElementById('badge-name').textContent = currentPlayer.name;
+  if (currentPlayer.isAdmin && !document.getElementById('t-players')) {
+    const bar = document.getElementById('tabs-bar');
+    const btn = document.createElement('button');
+    btn.className = 'tab'; btn.id = 't-players';
+    btn.textContent = 'Players';
+    btn.onclick = () => switchTab('players');
+    bar.appendChild(btn);
+  }
+  unsubPlayers = onSnapshot(collection(db, 'players'), snap => {
+    players = [];
+    snap.forEach(d => players.push({ id: d.id, ...d.data() }));
+    players.sort((a,b) => (a.createdAt||'').localeCompare(b.createdAt||''));
+    onPlayersUpdated();
+  });
+  unsubGames = onSnapshot(collection(db, 'games'), snap => {
+    games = [];
+    snap.forEach(d => games.push({ id: d.id, ...d.data() }));
+    games.sort((a,b) => (a.createdAt||'').localeCompare(b.createdAt||''));
+    onGamesUpdated();
+  });
+}
+
+function onPlayersUpdated() {
+  document.getElementById('header-players').textContent = players.map(p => p.name).join(' · ');
+  if (!inboxPlayerId) inboxPlayerId = currentPlayer.id;
+  renderMatrix(); renderInboxChips(); renderInbox(); renderAddForm();
+  if (currentPlayer.isAdmin) renderPlayersTab();
+}
+function onGamesUpdated() {
+  renderMatrix(); renderInbox();
+  if (activeCell) renderDetail(activeCell.fromId, activeCell.toId);
+}
+
+function renderMatrix() {
+  const tbl = document.getElementById('the-matrix');
+  if (!tbl) return;
+  let h = '<tr><th></th>';
+  players.forEach(p => h += `<th style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${esc(p.name)}</th>`);
+  h += '</tr>';
+  players.forEach(from => {
+    h += `<tr><th class="rl">${esc(from.name)}</th>`;
+    players.forEach(to => {
+      if (from.id === to.id) { h += `<td class="diag"></td>`; return; }
+      const gs = gamesFor(from.id, to.id);
+      const done = gs.filter(g => g.studied).length;
+      const isAct = activeCell && activeCell.fromId === from.id && activeCell.toId === to.id;
+      h += `<td class="cell${isAct?' active':''}" onclick="openCell('${from.id}','${to.id}')">`;
+      h += `<span class="cell-num${gs.length===0?' zero':''}">${gs.length===0?'&mdash;':gs.length}</span>`;
+      if (gs.length > 0) h += `<span class="cell-info">${done}/${gs.length}&nbsp;&#10003;</span>`;
+      h += `</td>`;
+    });
+    h += '</tr>';
+  });
+  tbl.innerHTML = h;
+}
+
+window.openCell = function(fromId, toId) {
+  activeCell = {fromId, toId};
+  document.getElementById('detail-panel').style.display = 'block';
+  document.getElementById('detail-title').textContent = `${playerName(fromId)} \u2192 ${playerName(toId)}`;
+  renderDetail(fromId, toId); renderMatrix();
+};
+window.closeDetail = function() {
+  activeCell = null;
+  document.getElementById('detail-panel').style.display = 'none';
+  renderMatrix();
+};
+
+function renderDetail(fromId, toId) {
+  const gs = gamesFor(fromId, toId);
+  let h = gs.length === 0 ? '<div class="empty-state">No games yet.</div>' : gs.map(g => cardHTML(g)).join('');
+  if (currentPlayer.isAdmin || currentPlayer.id === fromId)
+    h += `<button class="add-pair-btn" onclick="quickAdd('${fromId}','${toId}')">+ add game for this pair</button>`;
+  const el = document.getElementById('detail-body');
+  if (el) el.innerHTML = h;
+}
+
+function renderInboxChips() {
+  const el = document.getElementById('inbox-chips');
+  if (!el) return;
+  el.innerHTML = players.map(p =>
+    `<button class="chip${p.id===inboxPlayerId?' active':''}" onclick="setInboxPlayer('${p.id}')">${esc(p.name)}</button>`
+  ).join('');
+}
+
+function renderInbox() {
+  const body = document.getElementById('inbox-body');
+  if (!body || !inboxPlayerId) return;
+  const mine = games.filter(g => g.to === inboxPlayerId);
+  if (!mine.length) { body.innerHTML = `<div class="empty-state">No games submitted to ${esc(playerName(inboxPlayerId))} yet.</div>`; return; }
+  let h = '';
+  players.forEach(from => {
+    if (from.id === inboxPlayerId) return;
+    const gs = mine.filter(g => g.from === from.id);
+    if (!gs.length) return;
+    h += `<div class="inbox-from-label">From ${esc(from.name)}</div>`;
+    gs.forEach(g => { h += cardHTML(g); });
+  });
+  body.innerHTML = h || `<div class="empty-state">No games submitted to ${esc(playerName(inboxPlayerId))} yet.</div>`;
+}
+
+function cardHTML(g) {
+  const sc = g.studied ? ' is-studied' : '';
+  let h = `<div class="game-card${sc}" id="gc-${esc(g.id)}">`;
+  h += `<div class="gc-players"><strong>${esc(g.white||'?')}</strong> vs <strong>${esc(g.black||'?')}</strong></div>`;
+  if (g.event || g.year) h += `<div class="gc-event">${esc([g.event,g.year].filter(Boolean).join(', '))}</div>`;
+  if (g.note) h += `<div class="gc-note">${esc(g.note)}</div>`;
+  h += `<div class="gc-foot"><label class="studied-row"><input type="checkbox"${g.studied?' checked':''} onchange="toggleStudied('${esc(g.id)}',this.checked)"> studied</label>`;
+  h += `<div class="gc-actions"><span class="gc-date">${g.date||''}</span>`;
+  if (canModify(g)) h += `<button class="act-btn" onclick="startEdit('${esc(g.id)}')">edit</button>`;
+  if (canModify(g)) h += `<button class="act-btn danger" onclick="deleteGame('${esc(g.id)}')">delete</button>`;
+  h += `</div></div></div>`;
+  return h;
+}
+
+window.toggleStudied = async function(id, val) {
+  await updateDoc(doc(db, 'games', id), { studied: val });
+};
+window.deleteGame = async function(id) {
+  if (!confirm('Delete this game from the log?')) return;
+  await deleteDoc(doc(db, 'games', id));
+};
+window.startEdit = function(id) {
+  const g = games.find(x => x.id === id);
+  const card = document.getElementById(`gc-${id}`);
+  if (!g || !card) return;
+  card.innerHTML = `<div class="edit-form">
+    <div class="form-row"><div class="fg"><label>White</label><input type="text" id="ew-${id}" value="${esc(g.white||'')}"></div><div class="fg"><label>Black</label><input type="text" id="eb-${id}" value="${esc(g.black||'')}"></div></div>
+    <div class="form-row"><div class="fg"><label>Event</label><input type="text" id="ee-${id}" value="${esc(g.event||'')}"></div><div class="fg"><label>Year</label><input type="text" id="ey-${id}" value="${esc(g.year||'')}" maxlength="4"></div></div>
+    <div class="form-row one"><div class="fg"><label>Note</label><textarea id="en-${id}">${esc(g.note||'')}</textarea></div></div>
+    <div class="edit-actions"><button class="btn-primary" style="font-size:12px;padding:6px 16px" onclick="saveEdit('${id}')">Save</button><button class="btn-secondary" style="font-size:12px" onclick="cancelEdit('${id}')">Cancel</button></div>
+  </div>`;
+};
+window.saveEdit = async function(id) {
+  const white = document.getElementById(`ew-${id}`).value.trim();
+  const black = document.getElementById(`eb-${id}`).value.trim();
+  const event = document.getElementById(`ee-${id}`).value.trim();
+  const year = document.getElementById(`ey-${id}`).value.trim();
+  const note = document.getElementById(`en-${id}`).value.trim();
+  await updateDoc(doc(db, 'games', id), { white, black, event, year, note });
+};
+window.cancelEdit = function(id) {
+  const g = games.find(x => x.id === id);
+  const card = document.getElementById(`gc-${id}`);
+  if (!g || !card) return;
+  card.outerHTML = cardHTML(g);
+};
+
+window.setInboxPlayer = function(id) { inboxPlayerId = id; renderInboxChips(); renderInbox(); };
+
+function renderAddForm() {
+  const fromSel = document.getElementById('f-from');
+  if (!fromSel) return;
+  if (currentPlayer.isAdmin) {
+    fromSel.innerHTML = players.map(p => `<option value="${p.id}"${p.id===currentPlayer.id?' selected':''}>${esc(p.name)}</option>`).join('');
+    fromSel.disabled = false;
+  } else {
+    fromSel.innerHTML = `<option value="${currentPlayer.id}">${esc(currentPlayer.name)}</option>`;
+    fromSel.disabled = true;
+  }
+  syncToOptions();
+}
+
+window.syncToOptions = function(preselect) {
+  const fromId = document.getElementById('f-from').value;
+  const toSel = document.getElementById('f-to');
+  const prev = preselect || toSel.value;
+  toSel.innerHTML = players.filter(p => p.id !== fromId).map(p =>
+    `<option value="${p.id}"${p.id===prev?' selected':''}>${esc(p.name)}</option>`
+  ).join('');
+};
+window.quickAdd = function(fromId, toId) {
+  switchTab('add');
+  if (currentPlayer.isAdmin) { document.getElementById('f-from').value = fromId; syncToOptions(toId); }
+};
+window.submitGame = async function() {
+  const fromId = document.getElementById('f-from').value;
+  const toId = document.getElementById('f-to').value;
+  const white = document.getElementById('f-white').value.trim();
+  const black = document.getElementById('f-black').value.trim();
+  const event = document.getElementById('f-event').value.trim();
+  const year = document.getElementById('f-year').value.trim();
+  const note = document.getElementById('f-note').value.trim();
+  const msg = document.getElementById('add-msg');
+  if (!white && !black) { msg.innerHTML = '<div class="msg-err">Enter at least one player name.</div>'; return; }
+  if (fromId === toId) { msg.innerHTML = '<div class="msg-err">Submitter and recipient cannot be the same.</div>'; return; }
+  try {
+    await addDoc(collection(db, 'games'), {
+      from: fromId, to: toId, white, black, event, year, note,
+      date: new Date().toISOString().slice(0,10), studied: false,
+      submitterEmail: currentUser.email, createdAt: new Date().toISOString()
+    });
+    msg.innerHTML = '<div class="msg-ok">Game saved.</div>';
+    ['f-white','f-black','f-event','f-year','f-note'].forEach(id => { document.getElementById(id).value = ''; });
+    setTimeout(() => { msg.innerHTML = ''; }, 2500);
+  } catch(e) { msg.innerHTML = `<div class="msg-err">${esc(e.message)}</div>`; }
+};
+
+function renderPlayersTab() {
+  const grid = document.getElementById('players-grid');
+  if (!grid) return;
+  grid.innerHTML = players.map(p => `
+    <div class="player-card">
+      <div class="pc-name">${esc(p.name)}</div>
+      <div class="pc-email">${esc(p.email)}</div>
+      <div><span class="pc-badge${p.isAdmin?' admin':''}">${p.isAdmin?'admin':'member'}</span></div>
+      ${p.id !== currentPlayer.id ? `<div style="margin-top:8px"><button class="act-btn danger" onclick="removePlayer('${p.id}')">remove</button></div>` : ''}
+    </div>`).join('');
+}
+window.addPlayer = async function() {
+  const name = document.getElementById('np-name').value.trim();
+  const email = document.getElementById('np-email').value.trim().toLowerCase();
+  const msg = document.getElementById('players-msg');
+  if (!name || !email) { msg.innerHTML = '<div class="msg-err">Enter both name and email.</div>'; return; }
+  if (players.some(p => p.email === email)) { msg.innerHTML = '<div class="msg-err">A player with this email already exists.</div>'; return; }
+  try {
+    await addDoc(collection(db, 'players'), { name, email, isAdmin: false, createdAt: new Date().toISOString() });
+    document.getElementById('np-name').value = '';
+    document.getElementById('np-email').value = '';
+    msg.innerHTML = '<div class="msg-ok">Player added.</div>';
+    setTimeout(() => { msg.innerHTML = ''; }, 2500);
+  } catch(e) { msg.innerHTML = `<div class="msg-err">${esc(e.message)}</div>`; }
+};
+window.removePlayer = async function(id) {
+  const p = playerById(id);
+  if (!p || !confirm(`Remove ${p.name}? Their submitted games will remain in the log.`)) return;
+  await deleteDoc(doc(db, 'players', id));
+};
+
+window.switchTab = function(name) {
+  ['matrix','inbox','add','players'].forEach(n => {
+    const sec = document.getElementById(`tab-${n}`);
+    const tab = document.getElementById(`t-${n}`);
+    if (sec) sec.classList.toggle('active', n===name);
+    if (tab) tab.classList.toggle('active', n===name);
+  });
+  if (name==='inbox') { renderInboxChips(); renderInbox(); }
+  if (name==='players') renderPlayersTab();
+};
+</script>
+</body>
+</html>
