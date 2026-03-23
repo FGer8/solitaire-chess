@@ -73,9 +73,22 @@ table.mx { border-collapse: collapse; }
 
 .game-card { border: 0.5px solid #d6c9b4; border-radius: 3px; padding: 0.75rem; margin-bottom: 8px; background: #fffdf9; }
 .game-card.is-studied { opacity: 0.48; }
-.gc-players { font-size: 13px; color: #1a1a1a; font-style: italic; }
-.gc-players strong { font-style: normal; font-weight: bold; color: #3d2f20; font-size: 14px; }
-.gc-event { font-size: 11px; color: #8a7968; margin-top: 3px; font-family: 'Courier New', monospace; }
+.gc-players-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.gc-players { font-size: 13px; color: #1a1a1a; font-style: italic; flex: 1; min-width: 0; }
+.gc-players u { font-style: normal; text-underline-offset: 3px; text-decoration-color: #8a6b45; }
+.gc-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.gc-event { font-size: 11px; color: #8a7968; font-family: 'Courier New', monospace; }
+.gc-result { font-size: 11px; font-family: 'Courier New', monospace; color: #6b5d4f; background: #f0e8d8; border: 0.5px solid #c8b89a; border-radius: 2px; padding: 1px 6px; }
+.badge-b { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-family: 'Courier New', monospace; padding: 2px 7px; border-radius: 3px; background: #3d2f20; color: #e8e1d5; white-space: nowrap; flex-shrink: 0; }
+.badge-w { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-family: 'Courier New', monospace; padding: 2px 7px; border-radius: 3px; background: #f0e8d8; color: #3d2f20; border: 0.5px solid #c8b89a; white-space: nowrap; flex-shrink: 0; }
+.sq-b { display: inline-block; width: 9px; height: 9px; background: #3d2f20; border: 0.5px solid #6b5d4f; border-radius: 1px; flex-shrink: 0; }
+.sq-w { display: inline-block; width: 9px; height: 9px; background: #f0e8d8; border: 0.5px solid #c8b89a; border-radius: 1px; flex-shrink: 0; }
+.toggle-group { display: flex; border: 1px solid #c8b89a; border-radius: 3px; overflow: hidden; }
+.tgl { padding: 6px 12px; font-size: 12px; font-family: 'Courier New', monospace; border: none; border-right: 0.5px solid #c8b89a; cursor: pointer; background: #fffdf9; color: #8a7968; }
+.tgl:last-child { border-right: none; }
+.tgl.on-w { background: #f0e8d8; color: #3d2f20; font-weight: bold; }
+.tgl.on-b { background: #3d2f20; color: #e8e1d5; font-weight: bold; }
+.tgl.on-n { background: #e8e1d5; color: #6b5d4f; }
 .gc-note { font-size: 12px; color: #6b5d4f; margin-top: 7px; font-style: italic; padding-left: 8px; border-left: 2px solid #c8b89a; line-height: 1.5; }
 .gc-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; flex-wrap: wrap; gap: 4px; }
 .studied-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #8a7968; cursor: pointer; font-family: 'Courier New', monospace; }
@@ -209,6 +222,25 @@ table.mx { border-collapse: collapse; }
         <div class="form-row">
           <div class="fg" style="margin-bottom:0"><label>Event</label><input type="text" id="f-event" placeholder="e.g. World Championship match"></div>
           <div class="fg" style="margin-bottom:0"><label>Year</label><input type="text" id="f-year" placeholder="e.g. 1985" maxlength="4"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg" style="margin-bottom:0">
+            <label>Result</label>
+            <select id="f-result">
+              <option value="">— not set —</option>
+              <option value="1–0">1–0 (White wins)</option>
+              <option value="0–1">0–1 (Black wins)</option>
+              <option value="½–½">½–½ (Draw)</option>
+            </select>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label>Recipient plays as</label>
+            <div class="toggle-group">
+              <button type="button" class="tgl on-n" id="tgl-n" onclick="setPlayAs('')">—</button>
+              <button type="button" class="tgl" id="tgl-w" onclick="setPlayAs('white')">&#9633; White</button>
+              <button type="button" class="tgl" id="tgl-b" onclick="setPlayAs('black')">&#9632; Black</button>
+            </div>
+          </div>
         </div>
         <div class="form-row one">
           <div class="fg" style="margin-bottom:0"><label>Submitter&rsquo;s note</label><textarea id="f-note" placeholder="Why is this game instructive? What should the recipient focus on?"></textarea></div>
@@ -422,8 +454,22 @@ function renderInbox() {
 function cardHTML(g) {
   const sc = g.studied ? ' is-studied' : '';
   let h = `<div class="game-card${sc}" id="gc-${esc(g.id)}">`;
-  h += `<div class="gc-players"><strong>${esc(g.white||'?')}</strong> vs <strong>${esc(g.black||'?')}</strong></div>`;
-  if (g.event || g.year) h += `<div class="gc-event">${esc([g.event,g.year].filter(Boolean).join(', '))}</div>`;
+  h += `<div class="gc-players-row">`;
+  let whiteName = esc(g.white||'?');
+  let blackName = esc(g.black||'?');
+  if (g.playAs === 'white') whiteName = `<u>${whiteName}</u>`;
+  if (g.playAs === 'black') blackName = `<u>${blackName}</u>`;
+  h += `<span class="gc-players">${whiteName} vs ${blackName}</span>`;
+  if (g.playAs === 'white') h += `<span class="badge-w"><span class="sq-w"></span> play as White</span>`;
+  else if (g.playAs === 'black') h += `<span class="badge-b"><span class="sq-b"></span> play as Black</span>`;
+  h += `</div>`;
+  const metaParts = [g.event, g.year].filter(Boolean);
+  if (metaParts.length || g.result) {
+    h += `<div class="gc-meta">`;
+    if (metaParts.length) h += `<span class="gc-event">${esc(metaParts.join(', '))}</span>`;
+    if (g.result) h += `<span class="gc-result">${esc(g.result)}</span>`;
+    h += `</div>`;
+  }
   if (g.note) h += `<div class="gc-note">${esc(g.note)}</div>`;
   h += `<div class="gc-foot"><label class="studied-row"><input type="checkbox"${g.studied?' checked':''} onchange="toggleStudied('${esc(g.id)}',this.checked)"> studied</label>`;
   h += `<div class="gc-actions"><span class="gc-date">${g.date||''}</span>`;
@@ -444,9 +490,22 @@ window.startEdit = function(id) {
   const g = games.find(x => x.id === id);
   const card = document.getElementById(`gc-${id}`);
   if (!g || !card) return;
+  const resultOpts = ['','1–0','0–1','½–½'].map(v =>
+    `<option value="${v}"${g.result===v?' selected':''}>${v||'— not set —'}</option>`).join('');
+  const paW = g.playAs==='white', paB = g.playAs==='black', paN = !g.playAs;
   card.innerHTML = `<div class="edit-form">
     <div class="form-row"><div class="fg"><label>White</label><input type="text" id="ew-${id}" value="${esc(g.white||'')}"></div><div class="fg"><label>Black</label><input type="text" id="eb-${id}" value="${esc(g.black||'')}"></div></div>
     <div class="form-row"><div class="fg"><label>Event</label><input type="text" id="ee-${id}" value="${esc(g.event||'')}"></div><div class="fg"><label>Year</label><input type="text" id="ey-${id}" value="${esc(g.year||'')}" maxlength="4"></div></div>
+    <div class="form-row">
+      <div class="fg"><label>Result</label><select id="er-${id}">${resultOpts}</select></div>
+      <div class="fg"><label>Recipient plays as</label>
+        <div class="toggle-group">
+          <button type="button" class="tgl${paN?' on-n':''}" id="etgl-n-${id}" onclick="setEditPlayAs('${id}','')">—</button>
+          <button type="button" class="tgl${paW?' on-w':''}" id="etgl-w-${id}" onclick="setEditPlayAs('${id}','white')">&#9633; White</button>
+          <button type="button" class="tgl${paB?' on-b':''}" id="etgl-b-${id}" onclick="setEditPlayAs('${id}','black')">&#9632; Black</button>
+        </div>
+      </div>
+    </div>
     <div class="form-row one"><div class="fg"><label>Note</label><textarea id="en-${id}">${esc(g.note||'')}</textarea></div></div>
     <div class="edit-actions"><button class="btn-primary" style="font-size:12px;padding:6px 16px" onclick="saveEdit('${id}')">Save</button><button class="btn-secondary" style="font-size:12px" onclick="cancelEdit('${id}')">Cancel</button></div>
   </div>`;
@@ -457,7 +516,10 @@ window.saveEdit = async function(id) {
   const event = document.getElementById(`ee-${id}`).value.trim();
   const year = document.getElementById(`ey-${id}`).value.trim();
   const note = document.getElementById(`en-${id}`).value.trim();
-  await updateDoc(doc(db, 'games', id), { white, black, event, year, note });
+  const result = document.getElementById(`er-${id}`).value;
+  const playAs = document.getElementById(`etgl-w-${id}`).classList.contains('on-w') ? 'white'
+               : document.getElementById(`etgl-b-${id}`).classList.contains('on-b') ? 'black' : '';
+  await updateDoc(doc(db, 'games', id), { white, black, event, year, note, result, playAs });
 };
 window.cancelEdit = function(id) {
   const g = games.find(x => x.id === id);
@@ -501,19 +563,36 @@ window.submitGame = async function() {
   const event = document.getElementById('f-event').value.trim();
   const year = document.getElementById('f-year').value.trim();
   const note = document.getElementById('f-note').value.trim();
+  const result = document.getElementById('f-result').value;
+  const playAs = document.getElementById('tgl-w').classList.contains('on-w') ? 'white'
+               : document.getElementById('tgl-b').classList.contains('on-b') ? 'black' : '';
   const msg = document.getElementById('add-msg');
   if (!white && !black) { msg.innerHTML = '<div class="msg-err">Enter at least one player name.</div>'; return; }
   if (fromId === toId) { msg.innerHTML = '<div class="msg-err">Submitter and recipient cannot be the same.</div>'; return; }
   try {
     await addDoc(collection(db, 'games'), {
-      from: fromId, to: toId, white, black, event, year, note,
+      from: fromId, to: toId, white, black, event, year, note, result, playAs,
       date: new Date().toISOString().slice(0,10), studied: false,
       submitterEmail: currentUser.email, createdAt: new Date().toISOString()
     });
     msg.innerHTML = '<div class="msg-ok">Game saved.</div>';
     ['f-white','f-black','f-event','f-year','f-note'].forEach(id => { document.getElementById(id).value = ''; });
+    document.getElementById('f-result').value = '';
+    setPlayAs('');
     setTimeout(() => { msg.innerHTML = ''; }, 2500);
   } catch(e) { msg.innerHTML = `<div class="msg-err">${esc(e.message)}</div>`; }
+};
+
+window.setPlayAs = function(val) {
+  document.getElementById('tgl-n').className = 'tgl' + (val===''?' on-n':'');
+  document.getElementById('tgl-w').className = 'tgl' + (val==='white'?' on-w':'');
+  document.getElementById('tgl-b').className = 'tgl' + (val==='black'?' on-b':'');
+};
+
+window.setEditPlayAs = function(id, val) {
+  document.getElementById(`etgl-n-${id}`).className = 'tgl' + (val===''?' on-n':'');
+  document.getElementById(`etgl-w-${id}`).className = 'tgl' + (val==='white'?' on-w':'');
+  document.getElementById(`etgl-b-${id}`).className = 'tgl' + (val==='black'?' on-b':'');
 };
 
 function renderPlayersTab() {
