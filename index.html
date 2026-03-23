@@ -54,12 +54,12 @@ select:disabled { opacity: 0.65; cursor: not-allowed; }
 .matrix-layout { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
 .matrix-wrap { overflow-x: auto; }
 table.mx { border-collapse: collapse; }
-.mx th { font-size: 11px; font-weight: bold; color: #6b5d4f; padding: 6px 8px; text-align: center; font-family: 'Courier New', monospace; letter-spacing: 0.03em; }
-.mx th.rl { text-align: right; padding-right: 12px; white-space: nowrap; }
-.mx td.diag { background: #e8e1d5; width: 100px; height: 70px; border: 1px solid #d6c9b4; }
-.mx td.cell { width: 100px; height: 70px; cursor: pointer; text-align: center; vertical-align: middle; background: #fffdf9; border: 1px solid #d6c9b4; transition: background 0.12s; }
+.mx th { font-size: 11px; font-weight: bold; color: #6b5d4f; padding: 6px 8px; text-align: center; font-family: 'Courier New', monospace; letter-spacing: 0.03em; width: 110px; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mx th.rl { text-align: right; padding-right: 12px; white-space: nowrap; width: auto; max-width: none; }
+.mx td.diag { background: #e8e1d5; width: 110px; height: 70px; border: 1px solid #d6c9b4; }
+.mx td.cell { width: 110px; height: 70px; cursor: pointer; text-align: center; vertical-align: middle; background: #fffdf9; border: 1px solid #d6c9b4; transition: background 0.12s; }
 .mx td.cell:hover { background: #f0e8d8; }
-.mx td.cell.active { background: #e6ddc8; border-color: #8a6b45; }
+.mx td.cell.active { background: #e6ddc8; outline: 2px solid #8a6b45; outline-offset: -2px; border-color: #8a6b45; }
 .cell-num { font-size: 20px; color: #1a1a1a; display: block; font-family: 'Courier New', monospace; }
 .cell-num.zero { color: #c5b8a5; font-size: 15px; }
 .cell-info { font-size: 10px; color: #8a7968; display: block; margin-top: 2px; font-family: 'Courier New', monospace; }
@@ -75,20 +75,23 @@ table.mx { border-collapse: collapse; }
 .game-card.is-studied { opacity: 0.48; }
 .gc-players-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .gc-players { font-size: 13px; color: #1a1a1a; font-style: italic; flex: 1; min-width: 0; }
-.gc-players u { font-style: normal; text-underline-offset: 3px; text-decoration-color: #8a6b45; }
+.gc-players strong { font-style: normal; font-weight: bold; color: #3d2f20; font-size: 14px; }
+.gc-players u { font-style: normal; font-weight: bold; color: #3d2f20; font-size: 14px; text-decoration: none; }
 .gc-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
 .gc-event { font-size: 11px; color: #8a7968; font-family: 'Courier New', monospace; }
 .gc-result { font-size: 11px; font-family: 'Courier New', monospace; color: #6b5d4f; background: #f0e8d8; border: 0.5px solid #c8b89a; border-radius: 2px; padding: 1px 6px; }
-.badge-b { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-family: 'Courier New', monospace; padding: 2px 7px; border-radius: 3px; background: #3d2f20; color: #e8e1d5; white-space: nowrap; flex-shrink: 0; }
-.badge-w { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-family: 'Courier New', monospace; padding: 2px 7px; border-radius: 3px; background: #f0e8d8; color: #3d2f20; border: 0.5px solid #c8b89a; white-space: nowrap; flex-shrink: 0; }
-.sq-b { display: inline-block; width: 9px; height: 9px; background: #3d2f20; border: 0.5px solid #6b5d4f; border-radius: 1px; flex-shrink: 0; }
-.sq-w { display: inline-block; width: 9px; height: 9px; background: #f0e8d8; border: 0.5px solid #c8b89a; border-radius: 1px; flex-shrink: 0; }
-.toggle-group { display: flex; border: 1px solid #c8b89a; border-radius: 3px; overflow: hidden; }
-.tgl { padding: 6px 12px; font-size: 12px; font-family: 'Courier New', monospace; border: none; border-right: 0.5px solid #c8b89a; cursor: pointer; background: #fffdf9; color: #8a7968; }
+.badge-b { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-family: 'Courier New', monospace; padding: 3px 8px; border-radius: 3px; background: #f0e8d8; color: #3d2f20; border: 0.5px solid #c8b89a; white-space: nowrap; flex-shrink: 0; }
+.badge-w { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-family: 'Courier New', monospace; padding: 3px 8px; border-radius: 3px; background: #f0e8d8; color: #3d2f20; border: 0.5px solid #c8b89a; white-space: nowrap; flex-shrink: 0; }
+.sq-b { display: inline-block; width: 10px; height: 10px; background: #1a1a1a; border: 0.5px solid #1a1a1a; border-radius: 1px; flex-shrink: 0; }
+.sq-w { display: inline-block; width: 10px; height: 10px; background: #ffffff; border: 1px solid #c8b89a; border-radius: 1px; flex-shrink: 0; }
+.toggle-group { display: inline-flex; border: 1.5px solid #c8b89a; border-radius: 3px; overflow: hidden; width: fit-content; }
+.tgl { padding: 8px 16px; font-size: 12px; font-family: 'Courier New', monospace; border: none; border-right: 0.5px solid #c8b89a; cursor: pointer; background: #fffdf9; color: #8a7968; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .tgl:last-child { border-right: none; }
-.tgl.on-w { background: #f0e8d8; color: #3d2f20; font-weight: bold; }
+.tgl.on-w { background: #6b5d4f; color: #f7f4ef; font-weight: bold; }
 .tgl.on-b { background: #3d2f20; color: #e8e1d5; font-weight: bold; }
 .tgl.on-n { background: #e8e1d5; color: #6b5d4f; }
+.tgl-sq-w { display: inline-block; width: 9px; height: 9px; background: #ffffff; border: 1px solid #c8b89a; border-radius: 1px; flex-shrink: 0; }
+.tgl-sq-b { display: inline-block; width: 9px; height: 9px; background: #1a1a1a; border: 0.5px solid #555; border-radius: 1px; flex-shrink: 0; }
 .gc-note { font-size: 12px; color: #6b5d4f; margin-top: 7px; font-style: italic; padding-left: 8px; border-left: 2px solid #c8b89a; line-height: 1.5; }
 .gc-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; flex-wrap: wrap; gap: 4px; }
 .studied-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #8a7968; cursor: pointer; font-family: 'Courier New', monospace; }
@@ -237,8 +240,8 @@ table.mx { border-collapse: collapse; }
             <label>Recipient plays as</label>
             <div class="toggle-group">
               <button type="button" class="tgl on-n" id="tgl-n" onclick="setPlayAs('')">—</button>
-              <button type="button" class="tgl" id="tgl-w" onclick="setPlayAs('white')">&#9633; White</button>
-              <button type="button" class="tgl" id="tgl-b" onclick="setPlayAs('black')">&#9632; Black</button>
+              <button type="button" class="tgl" id="tgl-w" onclick="setPlayAs('white')"><span class="tgl-sq-w"></span>White</button>
+              <button type="button" class="tgl" id="tgl-b" onclick="setPlayAs('black')"><span class="tgl-sq-b"></span>Black</button>
             </div>
           </div>
         </div>
@@ -387,7 +390,7 @@ function renderMatrix() {
   const tbl = document.getElementById('the-matrix');
   if (!tbl) return;
   let h = '<tr><th></th>';
-  players.forEach(p => h += `<th style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${esc(p.name)}</th>`);
+  players.forEach(p => h += `<th>${esc(p.name)}</th>`);
   h += '</tr>';
   players.forEach(from => {
     h += `<tr><th class="rl">${esc(from.name)}</th>`;
@@ -455,10 +458,8 @@ function cardHTML(g) {
   const sc = g.studied ? ' is-studied' : '';
   let h = `<div class="game-card${sc}" id="gc-${esc(g.id)}">`;
   h += `<div class="gc-players-row">`;
-  let whiteName = esc(g.white||'?');
-  let blackName = esc(g.black||'?');
-  if (g.playAs === 'white') whiteName = `<u>${whiteName}</u>`;
-  if (g.playAs === 'black') blackName = `<u>${blackName}</u>`;
+  let whiteName = g.playAs === 'white' ? `<u>${esc(g.white||'?')}</u>` : `<strong>${esc(g.white||'?')}</strong>`;
+  let blackName = g.playAs === 'black' ? `<u>${esc(g.black||'?')}</u>` : `<strong>${esc(g.black||'?')}</strong>`;
   h += `<span class="gc-players">${whiteName} vs ${blackName}</span>`;
   if (g.playAs === 'white') h += `<span class="badge-w"><span class="sq-w"></span> play as White</span>`;
   else if (g.playAs === 'black') h += `<span class="badge-b"><span class="sq-b"></span> play as Black</span>`;
@@ -501,8 +502,8 @@ window.startEdit = function(id) {
       <div class="fg"><label>Recipient plays as</label>
         <div class="toggle-group">
           <button type="button" class="tgl${paN?' on-n':''}" id="etgl-n-${id}" onclick="setEditPlayAs('${id}','')">—</button>
-          <button type="button" class="tgl${paW?' on-w':''}" id="etgl-w-${id}" onclick="setEditPlayAs('${id}','white')">&#9633; White</button>
-          <button type="button" class="tgl${paB?' on-b':''}" id="etgl-b-${id}" onclick="setEditPlayAs('${id}','black')">&#9632; Black</button>
+          <button type="button" class="tgl${paW?' on-w':''}" id="etgl-w-${id}" onclick="setEditPlayAs('${id}','white')"><span class="tgl-sq-w"></span>White</button>
+          <button type="button" class="tgl${paB?' on-b':''}" id="etgl-b-${id}" onclick="setEditPlayAs('${id}','black')"><span class="tgl-sq-b"></span>Black</button>
         </div>
       </div>
     </div>
