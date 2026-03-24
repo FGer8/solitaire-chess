@@ -57,9 +57,19 @@ table.mx { border-collapse: collapse; }
 .mx th { font-size: 11px; font-weight: bold; color: #6b5d4f; padding: 6px 8px; text-align: center; font-family: 'Courier New', monospace; letter-spacing: 0.03em; width: 110px; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mx th.rl { text-align: right; padding-right: 12px; white-space: nowrap; width: auto; max-width: none; }
 .mx td.diag { background: #e8e1d5; width: 110px; height: 70px; border: 1px solid #d6c9b4; }
-.mx td.cell { width: 110px; height: 70px; cursor: pointer; text-align: center; vertical-align: middle; background: #fffdf9; border: 1px solid #d6c9b4; transition: background 0.12s; }
+.mx td.cell { width: 110px; height: 70px; cursor: pointer; text-align: center; vertical-align: middle; background: #fffdf9; border: 1px solid #d6c9b4; transition: background 0.15s; }
 .mx td.cell:hover { background: #f0e8d8; }
-.mx td.cell.active { background: #e6ddc8; outline: 2px solid #8a6b45; outline-offset: -2px; border-color: #8a6b45; }
+.mx td.cell.active { background: #e0d8cc; }
+.mx td.cell.cell-done { background: #dff0e8; }
+.mx td.cell.cell-done:hover { background: #cce6da; }
+.mx td.cell.cell-done.active { background: #b8d9cc; }
+.mx td.cell.cell-done .cell-num { color: #0f6e56; }
+.mx td.cell.cell-done .cell-info { color: #0f6e56; }
+.mx td.cell.cell-todo { background: #f5ecd8; }
+.mx td.cell.cell-todo:hover { background: #ecddc4; }
+.mx td.cell.cell-todo.active { background: #e0ceac; }
+.mx td.cell.cell-todo .cell-num { color: #854f0b; }
+.mx td.cell.cell-todo .cell-info { color: #854f0b; }
 .cell-num { font-size: 20px; color: #1a1a1a; display: block; font-family: 'Courier New', monospace; }
 .cell-num.zero { color: #c5b8a5; font-size: 15px; }
 .cell-info { font-size: 10px; color: #8a7968; display: block; margin-top: 2px; font-family: 'Courier New', monospace; }
@@ -128,6 +138,53 @@ table.mx { border-collapse: collapse; }
 .edit-form .form-row + .form-row { margin-top: 8px; }
 .edit-form .fg { margin-bottom: 0; }
 .edit-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+.lib-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.lib-search-wrap { position: relative; flex: 1; min-width: 160px; max-width: 260px; }
+.lib-search-wrap input { width: 100%; padding: 6px 10px 6px 28px; font-size: 12px; font-family: 'Courier New', monospace; border: 1px solid #c8b89a; border-radius: 3px; background: #fffdf9; color: #1a1a1a; }
+.lib-search-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #a0917f; pointer-events: none; }
+.lib-filter-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lib-filter-label { font-size: 10px; color: #8a7968; font-family: 'Courier New', monospace; letter-spacing: 0.05em; text-transform: uppercase; }
+.lib-tag-btn { padding: 3px 10px; font-size: 10px; font-family: 'Courier New', monospace; border: 1px solid #c8b89a; border-radius: 2px; background: #fffdf9; color: #6b5d4f; cursor: pointer; }
+.lib-tag-btn.on { background: #3d2f20; color: #f7f4ef; border-color: #3d2f20; }
+.lib-clear-btn { font-size: 10px; font-family: 'Courier New', monospace; color: #a0917f; background: none; border: none; cursor: pointer; text-decoration: underline; }
+.lib-count { font-size: 11px; color: #8a7968; font-family: 'Courier New', monospace; margin-bottom: 8px; }
+.lib-count strong { color: #3d2f20; }
+table.lib { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.lib thead th { font-size: 10px; font-family: 'Courier New', monospace; letter-spacing: 0.05em; text-transform: uppercase; color: #8a7968; text-align: left; padding: 6px 8px; border-bottom: 1.5px solid #c8b89a; white-space: nowrap; user-select: none; }
+table.lib thead th.sortable { cursor: pointer; }
+table.lib thead th.sortable:hover { color: #3d2f20; }
+table.lib thead th .arr { margin-left: 3px; opacity: 0.4; }
+table.lib thead th.sorted .arr { opacity: 1; color: #3d2f20; }
+table.lib tbody tr.lib-row { border-bottom: 0.5px solid #e8e1d5; cursor: pointer; }
+table.lib tbody tr.lib-row:hover { background: #f7f4ef; }
+table.lib tbody td { padding: 7px 8px; vertical-align: middle; color: #1a1a1a; }
+.lib-td-name { font-style: italic; }
+.lib-td-name strong { font-style: normal; color: #3d2f20; font-weight: bold; }
+.lib-td-meta { font-family: 'Courier New', monospace; color: #8a7968; white-space: nowrap; }
+.lib-td-result { font-family: 'Courier New', monospace; color: #8a7968; }
+.lib-td-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.lib-tag-pill { font-size: 9px; font-family: 'Courier New', monospace; padding: 1px 6px; border-radius: 2px; background: #e8e1d5; color: #6b5d4f; border: 0.5px solid #c8b89a; white-space: nowrap; }
+.lib-tag-pill.hi { background: #c8b89a; color: #3d2f20; }
+.lib-dot-btn { font-size: 14px; font-family: 'Courier New', monospace; color: #d6c9b4; background: none; border: none; padding: 0 4px; line-height: 1; letter-spacing: 1px; pointer-events: none; }
+.lib-detail-row td { padding: 0; background: #fdfaf6; border-left: 2px solid #c8b89a; }
+.lib-detail-inner { padding: 6px 10px 7px 14px; }
+.lib-detail-note { font-size: 12px; font-style: italic; color: #6b5d4f; line-height: 1.4; margin-bottom: 5px; }
+.lib-detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 5px; }
+.lib-detail-note { font-size: 12px; font-style: italic; color: #6b5d4f; line-height: 1.4; flex: 1; }
+.lib-detail-badge { flex-shrink: 0; display: flex; align-items: center; padding-top: 1px; }
+.lib-detail-sep { height: 0.5px; background: #e8e1d5; margin: 0 0 5px; }
+.lib-detail-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.lib-detail-left { display: flex; align-items: center; gap: 6px; }
+.lib-detail-center { font-size: 10px; color: #b0a08e; font-family: 'Courier New', monospace; text-align: right; }
+.lib-empty { font-size: 13px; color: #b0a08e; padding: 2rem 0; text-align: center; font-style: italic; }
+.gc-tag-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+.gc-tag-pill { font-size: 9px; font-family: 'Courier New', monospace; padding: 1px 7px; border-radius: 2px; background: #e8e1d5; color: #6b5d4f; border: 0.5px solid #c8b89a; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #3d2f20; color: #f7f4ef; font-size: 12px; font-family: 'Courier New', monospace; padding: 8px 20px; border-radius: 3px; opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 999; white-space: nowrap; }
+.toast.show { opacity: 1; }
+.form-tag-group { display: flex; gap: 6px; flex-wrap: wrap; }
+.form-tag-btn { padding: 5px 12px; font-size: 11px; font-family: 'Courier New', monospace; border: 1px solid #c8b89a; border-radius: 2px; background: #fffdf9; color: #6b5d4f; cursor: pointer; }
+.form-tag-btn.on { background: #3d2f20; color: #f7f4ef; border-color: #3d2f20; }
 </style>
 </head>
 <body>
@@ -188,6 +245,7 @@ table.mx { border-collapse: collapse; }
     <div class="tabs" id="tabs-bar">
       <button class="tab active" id="t-matrix" onclick="switchTab('matrix')">Matrix</button>
       <button class="tab" id="t-inbox" onclick="switchTab('inbox')">Inbox</button>
+      <button class="tab" id="t-library" onclick="switchTab('library')">Library</button>
       <button class="tab" id="t-add" onclick="switchTab('add')">+ Add game</button>
     </div>
 
@@ -246,12 +304,59 @@ table.mx { border-collapse: collapse; }
           </div>
         </div>
         <div class="form-row one">
+          <div class="fg" style="margin-bottom:0">
+            <label>Tags</label>
+            <div class="form-tag-group">
+              <button type="button" class="form-tag-btn" onclick="toggleFormTag(this,'Attack')">Attack</button>
+              <button type="button" class="form-tag-btn" onclick="toggleFormTag(this,'Endgame')">Endgame</button>
+              <button type="button" class="form-tag-btn" onclick="toggleFormTag(this,'Middlegame')">Middlegame</button>
+              <button type="button" class="form-tag-btn" onclick="toggleFormTag(this,'Strategy')">Strategy</button>
+              <button type="button" class="form-tag-btn" onclick="toggleFormTag(this,'Tactics')">Tactics</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-row one">
           <div class="fg" style="margin-bottom:0"><label>Submitter&rsquo;s note</label><textarea id="f-note" placeholder="Why is this game instructive? What should the recipient focus on?"></textarea></div>
         </div>
         <div style="margin-top:16px;display:flex;align-items:center;gap:14px">
           <button class="btn-primary" onclick="submitGame()">Save game</button>
           <div id="add-msg"></div>
         </div>
+      </div>
+    </div>
+
+    <div id="tab-library" class="section">
+      <div class="lib-top">
+        <div class="lib-search-wrap">
+          <span class="lib-search-icon">&#9906;</span>
+          <input type="text" id="lib-search" placeholder="Search player name…" oninput="renderLibrary()">
+        </div>
+        <div class="lib-filter-bar">
+          <span class="lib-filter-label">Filter</span>
+          <button class="lib-tag-btn" onclick="toggleLibTag(this,'Attack')">Attack</button>
+          <button class="lib-tag-btn" onclick="toggleLibTag(this,'Endgame')">Endgame</button>
+          <button class="lib-tag-btn" onclick="toggleLibTag(this,'Middlegame')">Middlegame</button>
+          <button class="lib-tag-btn" onclick="toggleLibTag(this,'Strategy')">Strategy</button>
+          <button class="lib-tag-btn" onclick="toggleLibTag(this,'Tactics')">Tactics</button>
+          <button class="lib-clear-btn" onclick="clearLibTags()">clear</button>
+        </div>
+      </div>
+      <div class="lib-count" id="lib-count"></div>
+      <div style="overflow-x:auto">
+        <table class="lib">
+          <thead>
+            <tr>
+              <th class="sortable" onclick="setLibSort('white')">White <span class="arr" id="larr-white"></span></th>
+              <th class="sortable" onclick="setLibSort('black')">Black <span class="arr" id="larr-black"></span></th>
+              <th class="sortable" onclick="setLibSort('year')">Year <span class="arr" id="larr-year"></span></th>
+              <th>Event</th>
+              <th class="sortable" onclick="setLibSort('result')">Result <span class="arr" id="larr-result"></span></th>
+              <th>Tags</th>
+              <th style="width:32px"></th>
+            </tr>
+          </thead>
+          <tbody id="lib-tbody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -357,7 +462,7 @@ function startApp() {
     const bar = document.getElementById('tabs-bar');
     const btn = document.createElement('button');
     btn.className = 'tab'; btn.id = 't-players';
-    btn.textContent = 'Players';
+    btn.textContent = 'Members';
     btn.onclick = () => switchTab('players');
     bar.appendChild(btn);
   }
@@ -382,7 +487,7 @@ function onPlayersUpdated() {
   if (currentPlayer.isAdmin) renderPlayersTab();
 }
 function onGamesUpdated() {
-  renderMatrix(); renderInbox();
+  renderMatrix(); renderInbox(); renderLibrary();
   if (activeCell) renderDetail(activeCell.fromId, activeCell.toId);
 }
 
@@ -397,11 +502,21 @@ function renderMatrix() {
     players.forEach(to => {
       if (from.id === to.id) { h += `<td class="diag"></td>`; return; }
       const gs = gamesFor(from.id, to.id);
-      const done = gs.filter(g => g.studied).length;
+      const n = gs.length;
+      const m = gs.filter(g => g.studied).length;
+      const outstanding = n - m;
       const isAct = activeCell && activeCell.fromId === from.id && activeCell.toId === to.id;
-      h += `<td class="cell${isAct?' active':''}" onclick="openCell('${from.id}','${to.id}')">`;
-      h += `<span class="cell-num${gs.length===0?' zero':''}">${gs.length===0?'&mdash;':gs.length}</span>`;
-      if (gs.length > 0) h += `<span class="cell-info">${done}/${gs.length}&nbsp;&#10003;</span>`;
+      let colorClass = '';
+      if (n > 0 && outstanding === 0) colorClass = ' cell-done';
+      else if (n > 0 && outstanding > 0) colorClass = ' cell-todo';
+      h += `<td class="cell${isAct?' active':''}${colorClass}" onclick="openCell('${from.id}','${to.id}')">`;
+      if (n === 0) {
+        h += `<span class="cell-num zero">&mdash;</span>`;
+      } else {
+        h += `<span class="cell-num">${outstanding}</span>`;
+        const tick = outstanding === 0 ? `&nbsp;&#10003;` : '';
+        h += `<span class="cell-info">${m}/${n}${tick}</span>`;
+      }
       h += `</td>`;
     });
     h += '</tr>';
@@ -410,24 +525,43 @@ function renderMatrix() {
 }
 
 window.openCell = function(fromId, toId) {
+  const existing = document.getElementById('detail-notice');
+  if (existing) existing.remove();
   activeCell = {fromId, toId};
   document.getElementById('detail-panel').style.display = 'block';
   document.getElementById('detail-title').textContent = `${playerName(fromId)} \u2192 ${playerName(toId)}`;
   renderDetail(fromId, toId); renderMatrix();
 };
 window.closeDetail = function() {
+  const existing = document.getElementById('detail-notice');
+  if (existing) existing.remove();
   activeCell = null;
   document.getElementById('detail-panel').style.display = 'none';
   renderMatrix();
 };
 
+let pendingNotice = null;
+
 function renderDetail(fromId, toId) {
-  const gs = gamesFor(fromId, toId);
-  let h = gs.length === 0 ? '<div class="empty-state">No games yet.</div>' : gs.map(g => cardHTML(g)).join('');
+  const gs = gamesFor(fromId, toId).filter(g => !g.studied);
+  let h = gs.length === 0 ? '<div class="empty-state">All games studied.</div>' : gs.map(g => cardHTML(g)).join('');
   if (currentPlayer.isAdmin || currentPlayer.id === fromId)
-    h += `<button class="add-pair-btn" onclick="quickAdd('${fromId}','${toId}')">+ add game for this pair</button>`;
+    h += `<button class="add-pair-btn" onclick="quickAdd('${fromId}','${toId}')">+ add game</button>`;
   const el = document.getElementById('detail-body');
-  if (el) el.innerHTML = h;
+  if (!el) return;
+  el.innerHTML = h;
+  if (pendingNotice) {
+    const panel = document.getElementById('detail-panel');
+    const existing = document.getElementById('detail-notice');
+    if (existing) existing.remove();
+    const msg = document.createElement('div');
+    msg.id = 'detail-notice';
+    msg.style.cssText = 'font-size:11px;font-family:"Courier New",monospace;color:#6b5d4f;padding:6px 10px;margin-top:8px;background:#f0e8d8;border-radius:3px;transition:opacity 0.5s';
+    msg.textContent = pendingNotice;
+    panel.after(msg);
+    pendingNotice = null;
+    setTimeout(() => { msg.style.opacity = '0'; setTimeout(() => msg.remove(), 500); }, 4500);
+  }
 }
 
 function renderInboxChips() {
@@ -443,14 +577,28 @@ function renderInbox() {
   if (!body || !inboxPlayerId) return;
   const mine = games.filter(g => g.to === inboxPlayerId);
   if (!mine.length) { body.innerHTML = `<div class="empty-state">No games submitted to ${esc(playerName(inboxPlayerId))} yet.</div>`; return; }
+  const unread = mine.filter(g => !g.studied);
+  const studied = mine.filter(g => g.studied);
   let h = '';
-  players.forEach(from => {
-    if (from.id === inboxPlayerId) return;
-    const gs = mine.filter(g => g.from === from.id);
-    if (!gs.length) return;
-    h += `<div class="inbox-from-label">From ${esc(from.name)}</div>`;
-    gs.forEach(g => { h += cardHTML(g); });
-  });
+  if (unread.length) {
+    players.forEach(from => {
+      if (from.id === inboxPlayerId) return;
+      const gs = unread.filter(g => g.from === from.id);
+      if (!gs.length) return;
+      h += `<div class="inbox-from-label">From ${esc(from.name)}</div>`;
+      gs.forEach(g => { h += cardHTML(g); });
+    });
+  }
+  if (studied.length) {
+    h += `<div style="display:flex;align-items:center;gap:10px;margin:24px 0 14px"><div style="flex:1;height:0.5px;background:#d6c9b4"></div><span style="font-size:10px;font-family:'Courier New',monospace;color:#b0a08e;letter-spacing:0.07em;text-transform:uppercase;white-space:nowrap">Studied</span><div style="flex:1;height:0.5px;background:#d6c9b4"></div></div>`;
+    players.forEach(from => {
+      if (from.id === inboxPlayerId) return;
+      const gs = studied.filter(g => g.from === from.id);
+      if (!gs.length) return;
+      h += `<div class="inbox-from-label">From ${esc(from.name)}</div>`;
+      gs.forEach(g => { h += cardHTML(g); });
+    });
+  }
   body.innerHTML = h || `<div class="empty-state">No games submitted to ${esc(playerName(inboxPlayerId))} yet.</div>`;
 }
 
@@ -464,12 +612,10 @@ function cardHTML(g) {
   if (g.playAs === 'white') h += `<span class="badge-w"><span class="sq-w"></span> play as White</span>`;
   else if (g.playAs === 'black') h += `<span class="badge-b"><span class="sq-b"></span> play as Black</span>`;
   h += `</div>`;
-  const metaParts = [g.event, g.year].filter(Boolean);
-  if (metaParts.length || g.result) {
-    h += `<div class="gc-meta">`;
-    if (metaParts.length) h += `<span class="gc-event">${esc(metaParts.join(', '))}</span>`;
-    if (g.result) h += `<span class="gc-result">${esc(g.result)}</span>`;
-    h += `</div>`;
+  const metaParts = [g.event, g.year, g.result].filter(Boolean);
+  if (metaParts.length) h += `<div class="gc-meta"><span class="gc-event">${esc(metaParts.join(', '))}</span></div>`;
+  if (g.tags && g.tags.length) {
+    h += `<div class="gc-tag-row">${g.tags.map(t => `<span class="gc-tag-pill">${esc(t)}</span>`).join('')}</div>`;
   }
   if (g.note) h += `<div class="gc-note">${esc(g.note)}</div>`;
   h += `<div class="gc-foot"><label class="studied-row"><input type="checkbox"${g.studied?' checked':''} onchange="toggleStudied('${esc(g.id)}',this.checked)"> studied</label>`;
@@ -480,7 +626,9 @@ function cardHTML(g) {
   return h;
 }
 
+let toastTimer = null;
 window.toggleStudied = async function(id, val) {
+  if (val) pendingNotice = 'Marked as studied — game moved to Inbox.';
   await updateDoc(doc(db, 'games', id), { studied: val });
 };
 window.deleteGame = async function(id) {
@@ -491,10 +639,35 @@ window.startEdit = function(id) {
   const g = games.find(x => x.id === id);
   const card = document.getElementById(`gc-${id}`);
   if (!g || !card) return;
+  card.innerHTML = editFormHTML(g) + `<div class="edit-actions"><button class="btn-primary" style="font-size:12px;padding:6px 16px" onclick="saveEdit('${id}')">Save</button><button class="btn-secondary" style="font-size:12px" onclick="cancelEdit('${id}')">Cancel</button></div>`;
+};
+window.saveEdit = async function(id) {
+  const white = document.getElementById(`ew-${id}`).value.trim();
+  const black = document.getElementById(`eb-${id}`).value.trim();
+  const event = document.getElementById(`ee-${id}`).value.trim();
+  const year = document.getElementById(`ey-${id}`).value.trim();
+  const note = document.getElementById(`en-${id}`).value.trim();
+  const result = document.getElementById(`er-${id}`).value;
+  const playAs = document.getElementById(`etgl-w-${id}`).classList.contains('on-w') ? 'white'
+               : document.getElementById(`etgl-b-${id}`).classList.contains('on-b') ? 'black' : '';
+  const tags = [...document.querySelectorAll(`#etags-${id} .form-tag-btn.on`)].map(b => b.textContent.trim());
+  await updateDoc(doc(db, 'games', id), { white, black, event, year, note, result, playAs, tags });
+};
+window.cancelEdit = function(id) {
+  const g = games.find(x => x.id === id);
+  const card = document.getElementById(`gc-${id}`);
+  if (!g || !card) return;
+  card.outerHTML = cardHTML(g);
+};
+
+function editFormHTML(g) {
+  const id = g.id;
   const resultOpts = ['','1–0','0–1','½–½'].map(v =>
     `<option value="${v}"${g.result===v?' selected':''}>${v||'— not set —'}</option>`).join('');
   const paW = g.playAs==='white', paB = g.playAs==='black', paN = !g.playAs;
-  card.innerHTML = `<div class="edit-form">
+  const tagBtns = TAGS.map(t =>
+    `<button type="button" class="form-tag-btn${(g.tags||[]).includes(t)?' on':''}" onclick="toggleFormTag(this)">${t}</button>`).join('');
+  return `<div class="edit-form">
     <div class="form-row"><div class="fg"><label>White</label><input type="text" id="ew-${id}" value="${esc(g.white||'')}"></div><div class="fg"><label>Black</label><input type="text" id="eb-${id}" value="${esc(g.black||'')}"></div></div>
     <div class="form-row"><div class="fg"><label>Event</label><input type="text" id="ee-${id}" value="${esc(g.event||'')}"></div><div class="fg"><label>Year</label><input type="text" id="ey-${id}" value="${esc(g.year||'')}" maxlength="4"></div></div>
     <div class="form-row">
@@ -507,26 +680,27 @@ window.startEdit = function(id) {
         </div>
       </div>
     </div>
+    <div class="form-row one"><div class="fg"><label>Tags</label><div class="form-tag-group" id="etags-${id}">${tagBtns}</div></div></div>
     <div class="form-row one"><div class="fg"><label>Note</label><textarea id="en-${id}">${esc(g.note||'')}</textarea></div></div>
-    <div class="edit-actions"><button class="btn-primary" style="font-size:12px;padding:6px 16px" onclick="saveEdit('${id}')">Save</button><button class="btn-secondary" style="font-size:12px" onclick="cancelEdit('${id}')">Cancel</button></div>
+  </div>`;
+}
+
+window.startLibEdit = function(id) {
+  const g = games.find(x => x.id === id);
+  const row = document.getElementById(`lib-detail-${id}`);
+  if (!g || !row) return;
+  const td = row.querySelector('td');
+  if (!td) return;
+  td.innerHTML = `<div class="lib-detail-inner">${editFormHTML(g)}
+    <div class="edit-actions" style="margin-top:10px">
+      <button class="btn-primary" style="font-size:12px;padding:6px 16px" onclick="saveLibEdit('${id}')">Save</button>
+      <button class="btn-secondary" style="font-size:12px" onclick="renderLibrary()">Cancel</button>
+    </div>
   </div>`;
 };
-window.saveEdit = async function(id) {
-  const white = document.getElementById(`ew-${id}`).value.trim();
-  const black = document.getElementById(`eb-${id}`).value.trim();
-  const event = document.getElementById(`ee-${id}`).value.trim();
-  const year = document.getElementById(`ey-${id}`).value.trim();
-  const note = document.getElementById(`en-${id}`).value.trim();
-  const result = document.getElementById(`er-${id}`).value;
-  const playAs = document.getElementById(`etgl-w-${id}`).classList.contains('on-w') ? 'white'
-               : document.getElementById(`etgl-b-${id}`).classList.contains('on-b') ? 'black' : '';
-  await updateDoc(doc(db, 'games', id), { white, black, event, year, note, result, playAs });
-};
-window.cancelEdit = function(id) {
-  const g = games.find(x => x.id === id);
-  const card = document.getElementById(`gc-${id}`);
-  if (!g || !card) return;
-  card.outerHTML = cardHTML(g);
+
+window.saveLibEdit = async function(id) {
+  await saveEdit(id);
 };
 
 window.setInboxPlayer = function(id) { inboxPlayerId = id; renderInboxChips(); renderInbox(); };
@@ -567,12 +741,13 @@ window.submitGame = async function() {
   const result = document.getElementById('f-result').value;
   const playAs = document.getElementById('tgl-w').classList.contains('on-w') ? 'white'
                : document.getElementById('tgl-b').classList.contains('on-b') ? 'black' : '';
+  const tags = [...document.querySelectorAll('.form-tag-btn.on')].map(b => b.textContent.trim());
   const msg = document.getElementById('add-msg');
   if (!white && !black) { msg.innerHTML = '<div class="msg-err">Enter at least one player name.</div>'; return; }
   if (fromId === toId) { msg.innerHTML = '<div class="msg-err">Submitter and recipient cannot be the same.</div>'; return; }
   try {
     await addDoc(collection(db, 'games'), {
-      from: fromId, to: toId, white, black, event, year, note, result, playAs,
+      from: fromId, to: toId, white, black, event, year, note, result, playAs, tags,
       date: new Date().toISOString().slice(0,10), studied: false,
       submitterEmail: currentUser.email, createdAt: new Date().toISOString()
     });
@@ -580,6 +755,7 @@ window.submitGame = async function() {
     ['f-white','f-black','f-event','f-year','f-note'].forEach(id => { document.getElementById(id).value = ''; });
     document.getElementById('f-result').value = '';
     setPlayAs('');
+    document.querySelectorAll('.form-tag-btn.on').forEach(b => b.classList.remove('on'));
     setTimeout(() => { msg.innerHTML = ''; }, 2500);
   } catch(e) { msg.innerHTML = `<div class="msg-err">${esc(e.message)}</div>`; }
 };
@@ -627,14 +803,137 @@ window.removePlayer = async function(id) {
   await deleteDoc(doc(db, 'players', id));
 };
 
+const TAGS = ['Attack','Endgame','Middlegame','Strategy','Tactics'];
+let libActiveTags = new Set();
+let libSortCol = 'date';
+let libSortDir = -1;
+let libExpanded = new Set();
+
+window.toggleLibTag = function(btn, tag) {
+  if (libActiveTags.has(tag)) { libActiveTags.delete(tag); btn.classList.remove('on'); }
+  else { libActiveTags.add(tag); btn.classList.add('on'); }
+  renderLibrary();
+};
+window.clearLibTags = function() {
+  libActiveTags.clear();
+  document.querySelectorAll('.lib-tag-btn').forEach(b => b.classList.remove('on'));
+  renderLibrary();
+};
+window.setLibSort = function(col) {
+  if (libSortCol === col) libSortDir *= -1; else { libSortCol = col; libSortDir = 1; }
+  TAGS.forEach(() => {});
+  ['white','black','year','result'].forEach(c => {
+    const el = document.getElementById('larr-'+c);
+    if (el) { el.textContent = ''; el.parentElement.classList.remove('sorted'); }
+  });
+  const arr = document.getElementById('larr-'+col);
+  if (arr) { arr.textContent = libSortDir===1?'↑':'↓'; arr.parentElement.classList.add('sorted'); }
+  renderLibrary();
+};
+
+function renderLibrary() {
+  const tbody = document.getElementById('lib-tbody');
+  const countEl = document.getElementById('lib-count');
+  if (!tbody) return;
+  const q = (document.getElementById('lib-search')?.value||'').trim().toLowerCase();
+  let list = games.filter(g => {
+    const tagMatch = libActiveTags.size===0 || [...libActiveTags].every(t => (g.tags||[]).includes(t));
+    const searchMatch = !q || (g.white||'').toLowerCase().includes(q) || (g.black||'').toLowerCase().includes(q);
+    return tagMatch && searchMatch;
+  });
+  list.sort((a,b) => {
+    const av = a[libSortCol]||'', bv = b[libSortCol]||'';
+    return av < bv ? -libSortDir : av > bv ? libSortDir : 0;
+  });
+  if (countEl) countEl.innerHTML = `Showing <strong>${list.length}</strong> of ${games.length} games`;
+  tbody.innerHTML = '';
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="lib-empty">No games match the current filters.</td></tr>`;
+    return;
+  }
+  list.forEach(g => {
+    const isOpen = libExpanded.has(g.id);
+    const tagHtml = (g.tags||[]).map(t =>
+      `<span class="lib-tag-pill${libActiveTags.has(t)?' hi':''}">${esc(t)}</span>`).join('');
+    const tr = document.createElement('tr');
+    tr.className = 'lib-row';
+    tr.dataset.id = g.id;
+    tr.innerHTML = `
+      <td class="lib-td-name"><strong>${esc(g.white||'?')}</strong></td>
+      <td class="lib-td-name"><strong>${esc(g.black||'?')}</strong></td>
+      <td class="lib-td-meta">${esc(g.year||'')}</td>
+      <td class="lib-td-meta" style="color:#6b5d4f">${esc(g.event||'')}</td>
+      <td class="lib-td-result">${esc(g.result||'')}</td>
+      <td><div class="lib-td-tags">${tagHtml}</div></td>
+      <td><span class="lib-dot-btn">&#xB7;&#xB7;&#xB7;</span></td>`;
+    tr.onclick = (e) => {
+      e.stopPropagation();
+      const wasOpen = libExpanded.has(g.id);
+      libExpanded.clear();
+      if (!wasOpen) libExpanded.add(g.id);
+      renderLibrary();
+    };
+    tbody.appendChild(tr);
+    if (isOpen) {
+      const nr = document.createElement('tr');
+      nr.className = 'lib-detail-row';
+      nr.id = `lib-detail-${g.id}`;
+      nr.onclick = e => e.stopPropagation();
+      const fromName = playerName(g.from);
+      const toName = playerName(g.to);
+      let playBadge = '';
+      if (g.playAs === 'white') playBadge = `<span class="badge-w"><span class="sq-w"></span> play as White</span>`;
+      else if (g.playAs === 'black') playBadge = `<span class="badge-b"><span class="sq-b"></span> play as Black</span>`;
+      const noteHtml = g.note ? esc(g.note) : `<span style="color:#b0a08e">No note.</span>`;
+      const editBtns = canModify(g) ? `<button class="act-btn" onclick="startLibEdit('${esc(g.id)}')">edit</button><button class="act-btn danger" onclick="deleteGame('${esc(g.id)}')">delete</button>` : '';
+      nr.innerHTML = `<td colspan="7">
+        <div class="lib-detail-inner">
+          <div class="lib-detail-top">
+            <div class="lib-detail-note">${noteHtml}</div>
+            ${playBadge ? `<div class="lib-detail-badge">${playBadge}</div>` : ''}
+          </div>
+          <div class="lib-detail-sep"></div>
+          <div class="lib-detail-foot">
+            <div class="lib-detail-left">${editBtns || '<span></span>'}</div>
+            <div class="lib-detail-center">${esc(fromName)}&nbsp;&rarr;&nbsp;${esc(toName)}</div>
+          </div>
+        </div>
+      </td>`;
+      tbody.appendChild(nr);
+    }
+  });
+}
+window.renderLibrary = renderLibrary;
+
+window.toggleFormTag = function(btn) { btn.classList.toggle('on'); };
+
+document.addEventListener('click', () => {
+  if (libExpanded.size > 0) { libExpanded.clear(); renderLibrary(); }
+});
+
+function resetLibrary() {
+  libActiveTags.clear();
+  libExpanded.clear();
+  libSortCol = 'date'; libSortDir = -1;
+  const search = document.getElementById('lib-search');
+  if (search) search.value = '';
+  document.querySelectorAll('.lib-tag-btn').forEach(b => b.classList.remove('on'));
+  ['white','black','year','result'].forEach(c => {
+    const el = document.getElementById('larr-'+c);
+    if (el) { el.textContent = ''; el.parentElement.classList.remove('sorted'); }
+  });
+}
+
 window.switchTab = function(name) {
-  ['matrix','inbox','add','players'].forEach(n => {
+  if (name !== 'library') resetLibrary();
+  ['matrix','inbox','add','library','players'].forEach(n => {
     const sec = document.getElementById(`tab-${n}`);
     const tab = document.getElementById(`t-${n}`);
     if (sec) sec.classList.toggle('active', n===name);
     if (tab) tab.classList.toggle('active', n===name);
   });
   if (name==='inbox') { renderInboxChips(); renderInbox(); }
+  if (name==='library') renderLibrary();
   if (name==='players') renderPlayersTab();
 };
 </script>
